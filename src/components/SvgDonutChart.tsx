@@ -5,6 +5,7 @@ import { currencyService, type CurrencyCode } from '../services/currency';
 interface SvgDonutChartProps {
   transactions: Transaction[];
   primaryCurrency: CurrencyCode;
+  onSelectCategory?: (category: string | null) => void;
 }
 
 const CATEGORIES: Record<string, { color: string; hoverColor: string }> = {
@@ -16,7 +17,7 @@ const CATEGORIES: Record<string, { color: string; hoverColor: string }> = {
   Other: { color: '#8E8E93', hoverColor: '#AEAEB2' },       // Steel Muted
 };
 
-export const SvgDonutChart: React.FC<SvgDonutChartProps> = ({ transactions, primaryCurrency }) => {
+export const SvgDonutChart: React.FC<SvgDonutChartProps> = ({ transactions, primaryCurrency, onSelectCategory }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const expenses = useMemo(() => {
@@ -109,6 +110,7 @@ export const SvgDonutChart: React.FC<SvgDonutChartProps> = ({ transactions, prim
                     }}
                     onMouseEnter={() => setHoveredIndex(index)}
                     onMouseLeave={() => setHoveredIndex(null)}
+                    onClick={() => onSelectCategory?.(item.category)}
                   />
                 );
               })}
@@ -157,6 +159,7 @@ export const SvgDonutChart: React.FC<SvgDonutChartProps> = ({ transactions, prim
                   style={{ borderLeftColor: isHovered ? item.color : 'transparent' }}
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
+                  onClick={() => onSelectCategory?.(item.category)}
                 >
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />

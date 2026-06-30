@@ -7,10 +7,15 @@ interface SecurityLockProps {
 }
 
 const CORRECT_PIN = '1234';
-const IDLE_TIMEOUT_MS = 10000; // 10 seconds for quick testing, as requested!
+const IDLE_TIMEOUT_MS = 300000; // 5 minutes in milliseconds
 
 export const SecurityLock: React.FC<SecurityLockProps> = ({ children }) => {
-  const [isLocked, setIsLocked] = useState(false);
+  const [isLocked, setIsLocked] = useState(() => {
+    const isPinEnabled = localStorage.getItem('expenso_security_pin_enabled') !== 'false';
+    if (!isPinEnabled) return false;
+    const isUnlocked = sessionStorage.getItem('expenso_session_unlocked');
+    return isUnlocked !== 'true';
+  });
   const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
   const timeoutRef = useRef<number | null>(null);
@@ -20,15 +25,27 @@ export const SecurityLock: React.FC<SecurityLockProps> = ({ children }) => {
       window.clearTimeout(timeoutRef.current);
     }
     
+    const isPinEnabled = localStorage.getItem('expenso_security_pin_enabled') !== 'false';
+    if (!isPinEnabled) return;
+
     // Only start the timer if the screen is not already locked
     if (!isLocked) {
+      const timeoutMin = parseFloat(localStorage.getItem('expenso_security_timeout') || '5');
+      const timeoutMs = timeoutMin * 60 * 1000;
+      
       timeoutRef.current = window.setTimeout(() => {
         setIsLocked(true);
-      }, IDLE_TIMEOUT_MS);
+      }, timeoutMs);
     }
   };
 
   useEffect(() => {
+    const isPinEnabled = localStorage.getItem('expenso_security_pin_enabled') !== 'false';
+    if (!isPinEnabled) {
+      setIsLocked(false);
+      return;
+    }
+
     // Event listeners to detect user activity
     const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
     
@@ -55,8 +72,11 @@ export const SecurityLock: React.FC<SecurityLockProps> = ({ children }) => {
     const newPin = pin + num;
     setPin(newPin);
 
-    if (newPin === CORRECT_PIN) {
+    const correctPin = localStorage.getItem('expenso_security_pin') || '1234';
+
+    if (newPin === correctPin) {
       setTimeout(() => {
+        sessionStorage.setItem('expenso_session_unlocked', 'true');
         setIsLocked(false);
         setPin('');
         setError(false);
@@ -133,7 +153,7 @@ export const SecurityLock: React.FC<SecurityLockProps> = ({ children }) => {
               {/* Hint */}
               <p className="text-[10px] text-text-muted mb-6 flex items-center gap-1">
                 <ShieldAlert size={12} className="text-secondary" />
-                <span>Enter Pin: <strong className="text-secondary">1234</strong> to unlock</span>
+                <span>Enter PIN to unlock</span>
               </p>
 
               {/* Keypad */}

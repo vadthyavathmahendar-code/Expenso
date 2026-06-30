@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTransactions } from '../context/TransactionContext';
 import type { CurrencyCode } from '../services/currency';
 import OcrScanner from './OcrScanner';
-import { X, Check, Tag, FileText } from 'lucide-react';
+import { X, Check, Tag, FileText, CreditCard, Coins, QrCode, Landmark } from 'lucide-react';
 
 interface AddTransactionModalProps {
   isOpen: boolean;
@@ -14,13 +14,15 @@ const CATEGORIES = ['Food', 'Transport', 'Bills', 'Entertainment', 'Salary', 'Ot
 const CURRENCIES: CurrencyCode[] = ['USD', 'EUR', 'INR'];
 
 export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen, onClose }) => {
-  const { addTransaction } = useTransactions();
+  const { addTransaction, accounts } = useTransactions();
   
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('Food');
   const [note, setNote] = useState('');
   const [type, setType] = useState<'income' | 'expense'>('expense');
   const [currency, setCurrency] = useState<CurrencyCode>('INR');
+  const [bankAccountId, setBankAccountId] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Credit Card' | 'UPI' | 'Bank Transfer'>('UPI');
 
   const [amountFocused, setAmountFocused] = useState(false);
   const [noteFocused, setNoteFocused] = useState(false);
@@ -34,13 +36,23 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen
     }
 
     try {
-      await addTransaction(parsedAmount, category, note || category, type, currency);
+      await addTransaction(
+        parsedAmount, 
+        category, 
+        note || category, 
+        type, 
+        currency, 
+        paymentMethod, 
+        bankAccountId || undefined
+      );
       // Reset form
       setAmount('');
       setCategory('Food');
       setNote('');
       setType('expense');
-      setCurrency('USD');
+      setCurrency('INR');
+      setBankAccountId('');
+      setPaymentMethod('UPI');
       onClose();
     } catch (e) {
       console.error(e);
@@ -209,6 +221,39 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen
                 </div>
               </div>
 
+              {/* Payment Method Selector */}
+              <div>
+                <label className="text-text-muted text-[10px] font-bold uppercase tracking-wider block mb-2">
+                  Payment Method
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {(['UPI', 'Credit Card', 'Cash', 'Bank Transfer'] as const).map((method) => {
+                    const isSelected = paymentMethod === method;
+                    return (
+                      <button
+                        key={method}
+                        type="button"
+                        onClick={() => setPaymentMethod(method)}
+                        className="py-2 rounded-xl border flex flex-col items-center justify-center gap-1.5 text-[10px] font-bold transition-all duration-150 cursor-pointer"
+                        style={{
+                          backgroundColor: isSelected ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.2)',
+                          borderColor: isSelected 
+                            ? (type === 'expense' ? '#00F5FF' : '#39FF14') 
+                            : 'rgba(255,255,255,0.08)',
+                          color: isSelected ? '#FFFFFF' : '#8E8E93'
+                        }}
+                      >
+                        {method === 'UPI' && <QrCode size={12} className={isSelected ? (type === 'expense' ? 'text-primary' : 'text-secondary') : 'text-text-muted'} />}
+                        {method === 'Credit Card' && <CreditCard size={12} className={isSelected ? (type === 'expense' ? 'text-primary' : 'text-secondary') : 'text-text-muted'} />}
+                        {method === 'Cash' && <Coins size={12} className={isSelected ? (type === 'expense' ? 'text-primary' : 'text-secondary') : 'text-text-muted'} />}
+                        {method === 'Bank Transfer' && <Landmark size={12} className={isSelected ? (type === 'expense' ? 'text-primary' : 'text-secondary') : 'text-text-muted'} />}
+                        <span>{method === 'Bank Transfer' ? 'Bank' : method === 'Credit Card' ? 'Card' : method}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Note Input */}
               <div>
                 <label className="text-text-muted text-[10px] font-bold uppercase tracking-wider block mb-1.5">
@@ -234,6 +279,27 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen
                   />
                 </div>
               </div>
+
+              {/* Bank Account Selector */}
+              {accounts.length > 0 && (
+                <div>
+                  <label className="text-text-muted text-[10px] font-bold uppercase tracking-wider block mb-1.5">
+                    Linked Bank Node / Wallet
+                  </label>
+                  <select
+                    value={bankAccountId}
+                    onChange={(e) => setBankAccountId(e.target.value)}
+                    className="w-full bg-black/20 border border-white/8 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-white/15 transition-all duration-150"
+                  >
+                    <option value="">-- None --</option>
+                    {accounts.map(acc => (
+                      <option key={acc.id} value={acc.id}>
+                        {acc.accountName} ({acc.accountType}) - Bal: {currency} {acc.balance.toFixed(2)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               {/* Submit Button */}
               <button

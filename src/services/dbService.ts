@@ -11,23 +11,11 @@ export interface Transaction {
   type: 'income' | 'expense' | 'lent' | 'borrowed';
   currency: 'USD' | 'EUR' | 'INR';
   paymentMethod?: 'Cash' | 'Credit Card' | 'UPI' | 'Bank Transfer';
+  bankAccountId?: string;
 }
 
-// Preloaded mock transactions for immediate presentation
-const DEFAULT_MOCK_TRANSACTIONS: Transaction[] = [
-  { id: '1', amount: 120.00, category: 'Food', note: 'Premium dinner at Nobu', date: new Date(Date.now() - 3600000 * 2).toISOString(), type: 'expense', currency: 'USD', paymentMethod: 'Credit Card' },
-  { id: '2', amount: 45.00, category: 'Transport', note: 'Uber Black Ride', date: new Date(Date.now() - 3600000 * 5).toISOString(), type: 'expense', currency: 'USD', paymentMethod: 'Credit Card' },
-  { id: '3', amount: 4200.00, category: 'Salary', note: 'Monthly Retainer (Development)', date: new Date(Date.now() - 3600000 * 24).toISOString(), type: 'income', currency: 'USD', paymentMethod: 'Bank Transfer' },
-  { id: '4', amount: 145.20, category: 'Bills', note: 'AWS Cloud Hosting', date: new Date(Date.now() - 3600000 * 48).toISOString(), type: 'expense', currency: 'EUR', paymentMethod: 'Bank Transfer' },
-  { id: '5', amount: 15.00, category: 'Entertainment', note: 'Netflix Subscription', date: new Date(Date.now() - 3600000 * 720).toISOString(), type: 'expense', currency: 'USD', paymentMethod: 'Credit Card' },
-  { id: '6', amount: 15.00, category: 'Entertainment', note: 'Netflix Subscription', date: new Date(Date.now() - 3600000 * 1440).toISOString(), type: 'expense', currency: 'USD', paymentMethod: 'Credit Card' },
-  { id: '7', amount: 25000.00, category: 'Salary', note: 'Freelance Consulting Contract', date: new Date(Date.now() - 3600000 * 120).toISOString(), type: 'income', currency: 'INR', paymentMethod: 'Bank Transfer' },
-  { id: '8', amount: 80.00, category: 'Food', note: 'Lunch with engineering team', date: new Date(Date.now() - 3600000 * 4).toISOString(), type: 'expense', currency: 'USD', paymentMethod: 'Cash' },
-  { id: '9', amount: 1200.00, category: 'Bills', note: 'Apartment Rent', date: new Date(Date.now() - 3600000 * 680).toISOString(), type: 'expense', currency: 'USD', paymentMethod: 'Bank Transfer' },
-  { id: '10', amount: 1200.00, category: 'Bills', note: 'Apartment Rent', date: new Date(Date.now() - 3600000 * 1380).toISOString(), type: 'expense', currency: 'USD', paymentMethod: 'Bank Transfer' },
-  { id: '11', amount: 30.00, category: 'Lending', note: 'Lent to Sam for lunch', date: new Date(Date.now() - 3600000 * 8).toISOString(), type: 'lent', currency: 'USD', paymentMethod: 'UPI' },
-  { id: '12', amount: 50.00, category: 'Debt', note: 'Borrowed from Dad', date: new Date(Date.now() - 3600000 * 12).toISOString(), type: 'borrowed', currency: 'USD', paymentMethod: 'UPI' },
-];
+// Preloaded mock transactions for immediate presentation (wiped for zero-data baseline)
+const DEFAULT_MOCK_TRANSACTIONS: Transaction[] = [];
 
 const loadMockTransactions = (): Transaction[] => {
   const stored = localStorage.getItem('expenso_mock_transactions');
