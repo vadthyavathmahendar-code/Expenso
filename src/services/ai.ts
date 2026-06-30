@@ -1,7 +1,28 @@
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import type { Transaction } from './dbService';
 import type { SavingsGoal, BankAccount } from '../context/TransactionContext';
-import { currencyService, type CurrencyCode } from './currency';
+import type { CurrencyCode } from './currency';
+
+export interface ChatMessage {
+  role: 'user' | 'model';
+  text: string;
+  meta?: {
+    genTime?: string;
+    receiptData?: {
+      amount: number;
+      merchant: string;
+      category: 'Food' | 'Transport' | 'Bills' | 'Entertainment' | 'Other';
+      note: string;
+    };
+    isGrillMe?: boolean;
+    grillMeStep?: number;
+    grillMeAnswers?: {
+      overheads?: string;
+      savingsTarget?: string;
+      stressPoint?: string;
+    };
+  };
+}
 
 // The placeholder key is used when the user hasn't configured their own Gemini API Key.
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyCwejrBIoZKfLLZTv3N1n4SQ6G4aSdTxxk';
@@ -275,21 +296,6 @@ async function runMockMahi(
   const totalExpense = expenses.reduce((sum, t) => sum + t.amount, 0);
   const totalIncome = incomes.reduce((sum, t) => sum + t.amount, 0);
 
-  // Category totals
-  const billsTotal = expenses.filter(t => t.category === 'Bills').reduce((sum, t) => sum + t.amount, 0);
-  const foodTotal = expenses.filter(t => t.category === 'Food').reduce((sum, t) => sum + t.amount, 0);
-  const transportTotal = expenses.filter(t => t.category === 'Transport').reduce((sum, t) => sum + t.amount, 0);
-  const entTotal = expenses.filter(t => t.category === 'Entertainment').reduce((sum, t) => sum + t.amount, 0);
-  const otherTotal = expenses.filter(t => t.category === 'Other').reduce((sum, t) => sum + t.amount, 0);
-
-  const categories = [
-    { name: 'Bills', total: billsTotal },
-    { name: 'Food', total: foodTotal },
-    { name: 'Transport', total: transportTotal },
-    { name: 'Entertainment', total: entTotal },
-    { name: 'Other', total: otherTotal }
-  ].sort((a, b) => b.total - a.total);
-
   // --- Live-Data Intent Matchers ---
 
   // 1. Intent: Account Balances
@@ -403,7 +409,7 @@ async function runMockMahi(
       const pct = Math.round((g.current / g.target) * 100);
       const remaining = Math.max(0, g.target - g.current);
       const daysLeft = calculateDaysRemaining(g.targetDate);
-      goalsList += `\n* 🎯 **${g.name}** (${g.priority} Priority): **${currencySymbol}${g.current.toLocaleString()}** / ${currencySymbol}${g.target.toLocaleString()} (${pct}% complete, ${daysLeft} left)`;
+      goalsList += `\n* 🎯 **${g.name}** (${g.priority} Priority): **${currencySymbol}${g.current.toLocaleString()}** / ${currencySymbol}${g.target.toLocaleString()} (${pct}% complete, ${currencySymbol}${remaining.toLocaleString()} remaining, ${daysLeft} left)`;
     });
 
     return `### 🎯 Savings Enclaves Progress:\n${goalsList}\n\n*Recommendation: Automate payday transfers to fund your highest priority goal first!*`;

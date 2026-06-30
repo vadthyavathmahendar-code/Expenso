@@ -6,8 +6,6 @@ interface SecurityLockProps {
   children: React.ReactNode;
 }
 
-const CORRECT_PIN = '1234';
-const IDLE_TIMEOUT_MS = 300000; // 5 minutes in milliseconds
 
 export const SecurityLock: React.FC<SecurityLockProps> = ({ children }) => {
   const [isLocked, setIsLocked] = useState(() => {
