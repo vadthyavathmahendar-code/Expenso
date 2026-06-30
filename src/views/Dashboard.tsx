@@ -171,7 +171,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout, onToggleMa
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <span className="text-primary text-[10px] font-bold uppercase tracking-widest block font-sans">Dashboard Terminal</span>
-            <h1 className="text-white text-2xl font-black tracking-tight mt-0.5 font-sans">Expenso</h1>
+            <h1 className="text-white text-2xl font-black tracking-tight mt-0.5 font-sans">expenso</h1>
           </div>
 
           {/* Action Row */}

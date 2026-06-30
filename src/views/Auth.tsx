@@ -59,7 +59,7 @@ export const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20 mb-4">
             <Sparkles className="text-black" size={26} strokeWidth={2.5} />
           </div>
-          <h1 className="text-white text-2xl font-black tracking-tight">Expenso</h1>
+          <h1 className="text-white text-2xl font-black tracking-tight">expenso</h1>
           <p className="text-text-muted text-xs mt-1 font-semibold uppercase tracking-wider">AI Wealth Terminal</p>
         </div>
 
