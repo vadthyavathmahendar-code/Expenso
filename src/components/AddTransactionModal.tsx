@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTransactions } from '../context/TransactionContext';
 import type { CurrencyCode } from '../services/currency';
 import OcrScanner from './OcrScanner';
-import { X, Check, DollarSign, Tag, FileText } from 'lucide-react';
+import { X, Check, Tag, FileText } from 'lucide-react';
 
 interface AddTransactionModalProps {
   isOpen: boolean;
@@ -243,9 +243,9 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen
                   background: type === 'expense' 
                     ? 'linear-gradient(135deg, #00F5FF 0%, #00C2FF 100%)' 
                     : 'linear-gradient(135deg, #39FF14 0%, #2EE610 100%)',
-                  shadowColor: type === 'expense' ? '#00F5FF' : '#39FF14',
-                  shadowOpacity: 0.3,
-                  shadowRadius: 15
+                  boxShadow: type === 'expense'
+                    ? '0 10px 20px -3px rgba(0, 245, 255, 0.3)'
+                    : '0 10px 20px -3px rgba(57, 255, 20, 0.3)'
                 }}
               >
                 <Check size={16} strokeWidth={2.5} />

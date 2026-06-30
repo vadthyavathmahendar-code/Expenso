@@ -11,8 +11,6 @@ import {
   HelpCircle, 
   Trash2,
   Scissors,
-  Calendar,
-  CreditCard as CardIcon,
   Filter
 } from 'lucide-react';
 
@@ -155,7 +153,6 @@ export const TransactionLedger: React.FC<TransactionLedgerProps> = ({
           <div className="flex flex-col gap-2">
             <AnimatePresence initial={false}>
               {filteredTransactions.map((item) => {
-                const isExpense = item.type === 'expense' || item.type === 'lent';
                 const isP2P = item.type === 'lent' || item.type === 'borrowed';
                 
                 // Color codes:

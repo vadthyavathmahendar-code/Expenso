@@ -100,11 +100,9 @@ async function runMockMahi(
     }
 
     let totalFood = 0;
-    let totalExpense = 0;
     if (callbacks?.onGetTransactions) {
       const txs = await callbacks.onGetTransactions();
       const expenses = txs.filter(t => t.type === 'expense');
-      totalExpense = expenses.reduce((sum, t) => sum + t.amount, 0);
       totalFood = expenses.filter(t => t.category === 'Food').reduce((sum, t) => sum + t.amount, 0);
     }
 

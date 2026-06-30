@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTransactions } from '../context/TransactionContext';
 import { sendMessageToMahi, type ChatMessage } from '../services/ai';
-import { Sparkles, Send, X, Bot, User, ArrowUp } from 'lucide-react';
+import { Sparkles, X, Bot, ArrowUp } from 'lucide-react';
 
 interface MahiSidebarProps {
   isOpen: boolean;

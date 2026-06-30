@@ -10,7 +10,6 @@ import AddTransactionModal from '../components/AddTransactionModal';
 import AccountWorkspace from './AccountWorkspace';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Sparkles, 
   TrendingUp, 
   TrendingDown, 
   LogOut, 
@@ -36,9 +35,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout, onToggleMa
   const { 
     transactions,
     convertedTransactions, 
-    loading, 
-    aiInsights, 
-    aiLoading,
     primaryCurrency,
     setPrimaryCurrency,
     addTransaction,
