@@ -18,7 +18,7 @@ export interface Transaction {
 const DEFAULT_MOCK_TRANSACTIONS: Transaction[] = [];
 
 const loadMockTransactions = (): Transaction[] => {
-  const stored = localStorage.getItem('expenso_mock_transactions');
+  const stored = localStorage.getItem('expenso_transactions_v2');
   if (stored) {
     try {
       return JSON.parse(stored);
@@ -26,7 +26,7 @@ const loadMockTransactions = (): Transaction[] => {
       console.error('Failed to parse stored mock transactions:', e);
     }
   }
-  localStorage.setItem('expenso_mock_transactions', JSON.stringify(DEFAULT_MOCK_TRANSACTIONS));
+  localStorage.setItem('expenso_transactions_v2', JSON.stringify(DEFAULT_MOCK_TRANSACTIONS));
   return DEFAULT_MOCK_TRANSACTIONS;
 };
 
@@ -169,13 +169,13 @@ export const dbService = {
       } catch (error) {
         console.warn('Firebase Firestore write failed (likely due to Security Rules). Falling back to local storage:', error);
         mockTransactions.unshift(newTx);
-        localStorage.setItem('expenso_mock_transactions', JSON.stringify(mockTransactions));
+        localStorage.setItem('expenso_transactions_v2', JSON.stringify(mockTransactions));
         window.dispatchEvent(new Event('storage'));
         return newTx;
       }
     } else {
       mockTransactions.unshift(newTx);
-      localStorage.setItem('expenso_mock_transactions', JSON.stringify(mockTransactions));
+      localStorage.setItem('expenso_transactions_v2', JSON.stringify(mockTransactions));
       window.dispatchEvent(new Event('storage'));
       return newTx;
     }
@@ -195,12 +195,12 @@ export const dbService = {
       } catch (error) {
         console.warn('Firebase Firestore delete failed (likely due to Security Rules). Falling back to local storage:', error);
         mockTransactions = mockTransactions.filter(t => t.id !== id);
-        localStorage.setItem('expenso_mock_transactions', JSON.stringify(mockTransactions));
+        localStorage.setItem('expenso_transactions_v2', JSON.stringify(mockTransactions));
         window.dispatchEvent(new Event('storage'));
       }
     } else {
       mockTransactions = mockTransactions.filter(t => t.id !== id);
-      localStorage.setItem('expenso_mock_transactions', JSON.stringify(mockTransactions));
+      localStorage.setItem('expenso_transactions_v2', JSON.stringify(mockTransactions));
       window.dispatchEvent(new Event('storage'));
     }
   },
