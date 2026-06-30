@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #09090A;
+  --color-surface: #121214;
+  --color-surface-elevated: #1C1C1F;
+  --color-surface-border: rgba(255, 255, 255, 0.08);
+  --color-primary: #39FF14;      /* Neon Mint/Green */
+  --color-secondary: #00F5FF;    /* Electric Cyan */
+  --color-accent: #BD00FF;       /* Deep Velvet Purple */
+  --color-text-muted: #8E8E93;
+  
+  --font-sans: "Inter", "Outfit", system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  html, body {
+    background-color: #09090A;
+    color: #FFFFFF;
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Custom Glassmorphism Utilities */
+.glass {
+  background: rgba(18, 18, 20, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-elevated {
+  background: rgba(26, 26, 28, 0.8);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Custom Scrollbars for Cinematic Look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #09090A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1C1C1F;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2D2D30;
+}
+
+/* Scanline laser animation */
+@keyframes laser-sweep {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.animate-laser {
+  animation: laser-sweep 2s infinite linear;
+}
+
+/* Breathing glow animations */
+@keyframes breathing-glow {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.25;
+    transform: scale(1.05);
+  }
+}
+
+.animate-glow-breathing {
+  animation: breathing-glow 6s infinite ease-in-out;
+}
