@@ -23,19 +23,26 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen
   const [currency, setCurrency] = useState<CurrencyCode>('INR');
   const [bankAccountId, setBankAccountId] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Credit Card' | 'UPI' | 'Bank Transfer'>('UPI');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [amountFocused, setAmountFocused] = useState(false);
   const [noteFocused, setNoteFocused] = useState(false);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     const parsedAmount = parseFloat(amount);
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
       alert('Please enter a valid amount');
       return;
     }
 
+    setIsSubmitting(true);
+    console.log("[DEBUG] Form submit triggered");
+
     try {
+      console.log("[DEBUG] addTransaction() called");
       await addTransaction(
         parsedAmount, 
         category, 
@@ -45,6 +52,8 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen
         paymentMethod, 
         bankAccountId || undefined
       );
+      console.log("[DEBUG] Transaction successfully saved");
+      
       // Reset form
       setAmount('');
       setCategory('Food');
@@ -57,6 +66,8 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen
     } catch (e) {
       console.error(e);
       alert('Failed to save transaction');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -304,7 +315,8 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen
               {/* Submit Button */}
               <button
                 type="submit"
-                className="mt-2 py-3.5 rounded-xl flex items-center justify-center gap-2 font-bold text-sm text-black cursor-pointer shadow-lg transition-all duration-200 hover:brightness-110 active:scale-[0.99]"
+                disabled={isSubmitting}
+                className="mt-2 py-3.5 rounded-xl flex items-center justify-center gap-2 font-bold text-sm text-black cursor-pointer shadow-lg transition-all duration-200 hover:brightness-110 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
                   background: type === 'expense' 
                     ? 'linear-gradient(135deg, #00F5FF 0%, #00C2FF 100%)' 
@@ -315,7 +327,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen
                 }}
               >
                 <Check size={16} strokeWidth={2.5} />
-                Compile Transaction
+                {isSubmitting ? 'Compiling Entry...' : 'Compile Transaction'}
               </button>
 
             </form>

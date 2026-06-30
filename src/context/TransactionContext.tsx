@@ -277,8 +277,6 @@ export const TransactionProvider: React.FC<{ children: React.ReactNode }> = ({ c
       bankAccountId
     });
 
-    setTransactions((prev) => [tx, ...prev]);
-
     // Update linked bank account balance
     if (bankAccountId) {
       updateBankAccountBalance(bankAccountId, amount, type);

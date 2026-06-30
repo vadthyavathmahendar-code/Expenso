@@ -25,10 +25,12 @@ import { ConfirmationModal } from './ConfirmationModal';
 // Custom lightweight Markdown parser for Mahi's responses, supporting tables, bold text, and confirmation actions
 const FormattedMessageText = ({ 
   text,
-  onAction 
+  onAction,
+  isSubmitting
 }: { 
   text: string;
   onAction?: (actionType: string, payload: any) => void;
+  isSubmitting?: boolean;
 }) => {
   const lines = text.split('\n');
   const renderedElements: React.ReactNode[] = [];
@@ -67,10 +69,11 @@ const FormattedMessageText = ({
             <span className="text-[9px] text-text-muted font-bold uppercase tracking-wider block font-sans">Telemetric Logging Confirmation</span>
             <button
               type="button"
+              disabled={isSubmitting}
               onClick={() => onAction?.('CONFIRM_RECEIPT', { amount, category, note, merchant })}
-              className="py-2 rounded-xl bg-gradient-to-tr from-primary to-secondary text-black font-bold text-[10px] uppercase tracking-wider shadow-lg hover:brightness-110 active:scale-98 transition-all duration-150 cursor-pointer text-center font-sans"
+              className="py-2 rounded-xl bg-gradient-to-tr from-primary to-secondary text-black font-bold text-[10px] uppercase tracking-wider shadow-lg hover:brightness-110 active:scale-98 transition-all duration-150 cursor-pointer text-center font-sans disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Confirm & Log Entry
+              {isSubmitting ? 'Logging...' : 'Confirm & Log Entry'}
             </button>
           </div>
         );
@@ -194,6 +197,7 @@ export const MahiBubble: React.FC<MahiBubbleProps> = ({ isOpen, setIsOpen }) => 
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [grillStep, setGrillStep] = useState(0);
   const [isConfirmClearOpen, setIsConfirmClearOpen] = useState(false);
+  const [isSubmittingAction, setIsSubmittingAction] = useState(false);
 
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -298,8 +302,10 @@ Thank you for using expenso. Keep optimizing!
   };
 
   const handleAction = async (actionType: string, payload: any) => {
+    if (isSubmittingAction) return;
     if (actionType === 'CONFIRM_RECEIPT') {
       const { amount, category, note } = payload;
+      setIsSubmittingAction(true);
       try {
         // Link to first bank account if available
         const linkAccount = accounts.length > 0 ? accounts[0].id : undefined;
@@ -312,6 +318,8 @@ Thank you for using expenso. Keep optimizing!
       } catch (err) {
         console.error(err);
         alert("Failed to log transaction.");
+      } finally {
+        setIsSubmittingAction(false);
       }
     }
   };
@@ -822,7 +830,7 @@ Thank you for using expenso. Keep optimizing!
                             : 'bg-black/20 border-white/5 text-white rounded-tl-none'
                         }`}
                       >
-                        <FormattedMessageText text={item.text} onAction={handleAction} />
+                        <FormattedMessageText text={item.text} onAction={handleAction} isSubmitting={isSubmittingAction} />
                       </div>
                       
                       {!isUser && (
